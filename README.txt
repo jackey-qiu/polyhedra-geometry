@@ -1,0 +1,1 @@
+To calculate all the coordinates of all the other vertices of some kind of polyhedra with 2 or 3 known vertices coordinates.
