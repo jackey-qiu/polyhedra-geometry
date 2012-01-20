@@ -107,7 +107,7 @@ class share_edge(share_face):
     def __init__(self,edge=np.array([[0.,0.,0.],[5,5,5]])):
         self.edge=edge
         
-    def cal_p2(self,theta=0.,phi=np.pi/2,flag='cross_center'):
+    def cal_p2(self,theta=0.,phi=np.pi/2,flag='off_center',**args):
         p0=self.edge[0,:]
         p1=self.edge[1,:]
         origin=(p0+p1)/2

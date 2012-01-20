@@ -22,7 +22,7 @@ class share_face():
     def __init__(self,face=np.array([[0.,0.,0.],[0.5,0.5,0.5],[1.0,1.0,1.0]])):
         self.face=face
         
-    def share_face_init(self):
+    def share_face_init(self,**args):
         p0,p1,p2=self.face[0,:],self.face[1,:],self.face[2,:]
         #consider the possible unregular shape for the known triangle
         dist_list=[np.sqrt(np.sum((p0-p1)**2)),np.sqrt(np.sum((p1-p2)**2)),np.sqrt(np.sum((p0-p2)**2))]
@@ -59,7 +59,7 @@ class share_edge(share_face):
     def __init__(self,edge=np.array([[0.,0.,0.],[0.5,0.5,0.5]])):
         self.edge=edge
         
-    def cal_p2(self,theta=0.,phi=np.pi/2):
+    def cal_p2(self,theta=0.,phi=np.pi/2,**args):
         p0=self.edge[0,:]
         p1=self.edge[1,:]
         origin=(p0+p1)/2
