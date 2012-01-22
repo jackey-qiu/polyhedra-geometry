@@ -137,14 +137,14 @@ class share_face():
             p4_org=np.dot(inv(T),p4_new)+center_point
             self.T,self.r,self.p3,self.p4=T,r,p3_org,p4_org
             
-    def cal_point_in_fit(self,origin_coor,dr,theta,phi):
+    def cal_point_in_fit(self,r,theta,phi):
         #during fitting,use the same coordinate system, but a different origin
         #note the origin_coor is the new position for the sorbate0, ie new center point
-        x=(self.r+dr)*np.cos(phi)*np.sin(theta)
-        y=(self.r+dr)*np.sin(phi)*np.sin(theta)
-        z=(self.r+dr)*np.cos(theta)
-        point_in_original_coor=np.dot(inv(self.T),np.array([x,y,z]))+origin_coor
-        return poin_in_original_coor
+        x=r*np.cos(phi)*np.sin(theta)
+        y=r*np.sin(phi)*np.sin(theta)
+        z=r*np.cos(theta)
+        point_in_original_coor=np.dot(inv(self.T),np.array([x,y,z]))+self.center_point
+        return point_in_original_coor
 
 class share_edge(share_face):
     def __init__(self,edge=np.array([[0.,0.,0.],[0.5,0.5,0.5]])):
@@ -210,6 +210,7 @@ class share_edge(share_face):
             z_p2=0.
             p2_new=np.array([x_p2,y_p2,z_p2])
             p2_old=np.dot(inv(T1),p2_new)+center_org
+            self.p2=p2_old
             self.face=np.append(self.edge,[p2_old],axis=0)
             self.flag='1_2'
         elif flag=='2_0+0_1':
@@ -224,6 +225,7 @@ class share_edge(share_face):
             z_p2=0
             p2_new=np.array([x_p2,y_p2,z_p2])
             p2_old=np.dot(inv(T),p2_new)+origin
+            self.p2=p2_old
             self.face=np.append(self.edge,[p2_old],axis=0)
             self.flag='2_1'
         elif flag=='0_2+0_1':
@@ -240,6 +242,7 @@ class share_edge(share_face):
             z_p2=r*np.cos(theta)
             p2_new=np.array([x_p2,y_p2,z_p2])
             p2_old=np.dot(inv(T),p2_new)+origin
+            self.p2=p2_old
             self.face=np.append(self.edge,[p2_old],axis=0)
             self.flag='0_3'
         
@@ -254,6 +257,7 @@ class share_corner(share_edge):
         y_p1=r*np.sin(phi)*np.sin(theta)+self.corner[1]
         z_p1=r*np.cos(theta)+self.corner[2]
         p1=np.array([x_p1,y_p1,z_p1])
+        self.p1=p1
         self.edge=np.append(self.corner,[p1],axis=0)
         
 if __name__=='__main__':
