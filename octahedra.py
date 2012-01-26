@@ -117,7 +117,7 @@ class share_edge(share_face):
         ref_point=0
         if ref_p!=None:
             ref_point=ref_p
-        elif:
+        else:
             x,y,z=0.,0.,0.
             #set the reference point as simply as possible,using the same distance assumption, we end up with a plane equation
             #then we try to find one cross point between one of the three basis and the plane we just got
