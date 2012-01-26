@@ -150,30 +150,34 @@ class share_edge(share_face):
     def __init__(self,edge=np.array([[0.,0.,0.],[0.5,0.5,0.5]])):
         self.edge=edge
         
-    def cal_p2(self,theta=None,phi=None,flag='0_2+0_1',extend_flag='type1'):
+    def cal_p2(self,theta=None,phi=None,ref_p=None,flag='0_2+0_1',extend_flag='type1'):
         p0=self.edge[0,:]
         p1=self.edge[1,:]
         origin=(p0+p1)/2
         dist=f2(p0,p1)
         diff=p1-p0
         c=np.sum(p1**2-p0**2)
-        x,y,z=0.,0.,0.
-        #set the reference point as simply as possible,using the same distance assumption, we end up with a plane equation
-        #then we try to find one cross point between one of the three basis and the plane we just got
-        #here combine two line equations (ref-->p0,and ref-->p1,the distance should be the same)
-        if diff[0]!=0:
-            x=c/(2*diff[0])
-        elif diff[1]!=0.:
-            y=c/(2*diff[1])
-        elif diff[2]!=0.:
-            z=c/(2*diff[2])
-        ref_point=np.array([x,y,z])
-        if sum(ref_point)==0:
-            #if the vector (p0-->p1) pass through origin [0,0,0],we need to specify another point satisfying the same-distance condition
-            #here, we a known point (x0,y0,z0)([0,0,0] in this case) and the normal vector to calculate the plane equation, 
-            #which is a(x-x0)+b(y-y0)+c(z-z0)=0, we specify x y to 1 and 0, calculate z value.
-            #a b c coresponds to vector origin-->p0
-            ref_point=[1.,0.,-p0[0]/p0[2]]
+        ref_point=0
+        if ref_p!=None:
+            ref_point=ref_p
+        elif:
+            x,y,z=0.,0.,0.
+            #set the reference point as simply as possible,using the same distance assumption, we end up with a plane equation
+            #then we try to find one cross point between one of the three basis and the plane we just got
+            #here combine two line equations (ref-->p0,and ref-->p1,the distance should be the same)
+            if diff[0]!=0:
+                x=c/(2*diff[0])
+            elif diff[1]!=0.:
+                y=c/(2*diff[1])
+            elif diff[2]!=0.:
+                z=c/(2*diff[2])
+            ref_point=np.array([x,y,z])
+            if sum(ref_point)==0:
+                #if the vector (p0-->p1) pass through origin [0,0,0],we need to specify another point satisfying the same-distance condition
+                #here, we a known point (x0,y0,z0)([0,0,0] in this case) and the normal vector to calculate the plane equation, 
+                #which is a(x-x0)+b(y-y0)+c(z-z0)=0, we specify x y to 1 and 0, calculate z value.
+                #a b c coresponds to vector origin-->p0
+                ref_point=[1.,0.,-p0[0]/p0[2]]
         if flag=='1_1+0_1':
             #we can have two choices symmetrically relating to each other,ie p0 can either be of up_down type or middl-layer type
             #extend_flag was used to distinguish these two case,'type1' means p0 be of up_down type

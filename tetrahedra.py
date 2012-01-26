@@ -60,26 +60,34 @@ class share_edge(share_face):
         self.edge=edge
         self.flag=None
         
-    def cal_p2(self,theta=0.,phi=np.pi/2,**args):
+    def cal_p2(self,ref_p=None,theta=0.,phi=np.pi/2,**args):
         p0=self.edge[0,:]
         p1=self.edge[1,:]
         origin=(p0+p1)/2
         dist=f2(p0,p1)
         diff=p1-p0
         c=np.sum(p1**2-p0**2)
-        x,y,z=0.,0.,0.
-        #set the reference point as simply as possible,using the same distance assumption, we end up with a plane equation
-        #then we try to find one cross point between one of the three basis and the plane we just got
-        #here combine two line equations (ref-->p0,and ref-->p1,the distance should be the same)
-        if diff[0]!=0:
-            x=c/(2*diff[0])
-        elif diff[1]!=0.:
-            y=c/(2*diff[1])
-        elif diff[2]!=0.:
-            z=c/(2*diff[2])
-        ref_point=np.array([x,y,z])
-        if sum(ref_point)==0:
-            ref_point=[1.,0.,-p0[0]/p0[2]]
+        ref_point=0
+        if ref_p!=None:
+            ref_point=ref_p
+        elif:
+            x,y,z=0.,0.,0.
+            #set the reference point as simply as possible,using the same distance assumption, we end up with a plane equation
+            #then we try to find one cross point between one of the three basis and the plane we just got
+            #here combine two line equations (ref-->p0,and ref-->p1,the distance should be the same)
+            if diff[0]!=0:
+                x=c/(2*diff[0])
+            elif diff[1]!=0.:
+                y=c/(2*diff[1])
+            elif diff[2]!=0.:
+                z=c/(2*diff[2])
+            ref_point=np.array([x,y,z])
+            if sum(ref_point)==0:
+                #if the vector (p0-->p1) pass through origin [0,0,0],we need to specify another point satisfying the same-distance condition
+                #here, we a known point (x0,y0,z0)([0,0,0] in this case) and the normal vector to calculate the plane equation, 
+                #which is a(x-x0)+b(y-y0)+c(z-z0)=0, we specify x y to 1 and 0, calculate z value.
+                #a b c coresponds to vector origin-->p0
+                ref_point=[1.,0.,-p0[0]/p0[2]]
         x1_v=f3(np.zeros(3),ref_point-origin)
         y1_v=f3(np.zeros(3),p1-origin)
         z1_v=np.cross(x1_v,y1_v)
