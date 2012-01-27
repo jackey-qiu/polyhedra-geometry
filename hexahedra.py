@@ -262,7 +262,7 @@ class share_corner(share_edge):
         z_p1=r*np.cos(theta)+self.corner[2]
         p1=np.array([x_p1,y_p1,z_p1])
         self.p1=p1
-        self.edge=np.append(self.corner,[p1],axis=0)
+        self.edge=np.append(self.corner[np.newaxis,:],p1[np.newaxis,:],axis=0)
         
 if __name__=='__main__':
     test1=hexahedra_4.share_edge(np.array([[0.,0.,0],[4.,2.,-1]]))

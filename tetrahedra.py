@@ -107,7 +107,7 @@ class share_corner(share_edge):
 #if want to share none, then just set the corner coordinate to the first point arbitratly.
     def __init__(self,corner=np.array([0.,0.,0.])):
         self.corner=corner
-        
+        self.flag=None
     def cal_p1(self,r,theta,phi):
     #here we simply use the original coordinate system converted to spherical coordinate system, but at different origin
         x_p1=r*np.cos(phi)*np.sin(theta)+self.corner[0]
@@ -115,7 +115,7 @@ class share_corner(share_edge):
         z_p1=r*np.cos(theta)+self.corner[2]
         p1=np.array([x_p1,y_p1,z_p1])
         self.p1=p1
-        self.edge=np.append(self.corner,[p1],axis=0)
+        self.edge=np.append(self.corner[np.newaxis,:],p1[np.newaxis,:],axis=0)
         
 if __name__=='__main__':
     test1=tetrahedra_3.share_edge(edge=np.array([[0.,0.,0.],[5.,5.,5.]]))
