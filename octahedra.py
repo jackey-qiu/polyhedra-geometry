@@ -134,7 +134,7 @@ class share_edge(share_face):
                 #here, we a known point (x0,y0,z0)([0,0,0] in this case) and the normal vector to calculate the plane equation, 
                 #which is a(x-x0)+b(y-y0)+c(z-z0)=0, we specify x y to 1 and 0, calculate z value.
                 #a b c coresponds to vector origin-->p0
-                ref_point=[1.,0.,-p0[0]/p0[2]]
+                ref_point=np.array([1.,0.,-p0[0]/p0[2]])
         if flag=='cross_center':
             x1_v=f3(np.zeros(3),ref_point-origin)
             z1_v=f3(np.zeros(3),p1-origin)

@@ -177,7 +177,7 @@ class share_edge(share_face):
                 #here, we a known point (x0,y0,z0)([0,0,0] in this case) and the normal vector to calculate the plane equation, 
                 #which is a(x-x0)+b(y-y0)+c(z-z0)=0, we specify x y to 1 and 0, calculate z value.
                 #a b c coresponds to vector origin-->p0
-                ref_point=[1.,0.,-p0[0]/p0[2]]
+                ref_point=np.array([1.,0.,-p0[0]/p0[2]])
         if flag=='1_1+0_1':
             #we can have two choices symmetrically relating to each other,ie p0 can either be of up_down type or middl-layer type
             #extend_flag was used to distinguish these two case,'type1' means p0 be of up_down type
