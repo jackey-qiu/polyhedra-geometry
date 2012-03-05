@@ -56,6 +56,7 @@ class tetrahedra_edge_distortion ():
     #in which we use the eqution of a plane with known normal vector through one known point
     #a(x-x0)+b(y-y0)+c(z-z0)=0, normal vector [a,b,c], known point [x0,y0,z0]
     #we specify phi and the thetha angle is dertermined using function above
+
         p0,p1=self.p0,self.p1
         if switch==True:
             p0=self.p1
@@ -95,6 +96,17 @@ class tetrahedra_edge_distortion ():
     #increase by 109.7 dc, so the basis idea here is to figure out the alpha value of the know point
     #and add the angle offset to get the other two phi angles
     #note we use the offset of each side length here
+        #ft calculate the angle of C 
+        ft=lambda a,b,c:np.arccos((a**2+b**2-c**2)/(2*a*b))
+        def cal_point_on_plane(normal,point_n,point_p):
+        #a plane is defined by normal to the normal vector and through ponit_n
+        #a line is parallel to the normal and throught point_p
+        #return the cross point of the line through the plance
+            x0,y0,z0=point_n[0],point_n[1],point_n[2]
+            x1,y1,z1=point_p[0],point_p[1],point_p[2]
+            a,b,c=normal[0],normal[1],normal[2]
+            t=(a*(x0-x1)+b*(y0-y1)+c*(z0-z1))/(a**2+b**2+c**2)
+            return np.array([x1+t*a,y1+t*b,z1+t*c])
         p0,p1=self.body_center,self.p0
         n_v=p1-p0
         a,b,c=n_v[0],n_v[1],n_v[2]
@@ -111,12 +123,27 @@ class tetrahedra_edge_distortion ():
         y_v=f3(np.zeros(3),(ref_p-origin))
         z_v=f3(np.zeros(3),(p1-origin))
         x_v=np.cross(z_v,y_v)
-        T=f1(x0_v,y0_v,z0_v,x_v,y_v,z_v)
+        T=f1(x0_v,y0_v,z0_v,x_v,y_v,z_v) 
         #print inv(T)
         r=self.edge_len
         theta = self.top_angle
-        phi1 = np.arccos(self.p1[0]/((r+self.offset[0])*np.sin(theta)))
-        #print self.p1[0]/((r+self.offset[0])*np.sin(theta))
+        phi1=0
+        #the idea to find phi1 is project the point onto xy plane, calculate the angle of the projected line 
+        #with x axis and y axis, y axis is a reference to determine the real angle
+        project_p1=cal_point_on_plane(normal=z_v,point_n=origin,point_p=self.p1)
+        x_pt=origin+x_v
+        y_pt=origin+y_v
+        ox_len=f2(origin,x_pt)
+        oy_len=f2(origin,y_pt)
+        opp_len=f2(origin,project_p1)
+        xpp_len=f2(project_p1,x_pt)
+        ypp_len=f2(project_p1,y_pt)
+        angle_x_o_pp=ft(ox_len,opp_len,xpp_len)
+        angle_y_o_pp=ft(oy_len,opp_len,ypp_len)
+        if angle_y_o_pp<=np.pi/2:
+            phi1=angle_x_o_pp
+        else:
+            phi1=np.pi*2-angle_x_o_pp
         phi2 = phi1+np.pi*2./3.
         phi3 = phi2+np.pi*2./3.
         p2_new = np.array([(r+self.offset[1])*np.cos(phi2)*np.sin(theta),(r+self.offset[1])*np.sin(phi2)*np.sin(theta),(r+self.offset[1])*np.cos(theta)])
@@ -131,12 +158,14 @@ class tetrahedra_edge_distortion ():
         self.cal_corner()
     def print_file(self):
         f=open('Y:\\codes\\my code\\modeling files\\surface modeling 1\\scripts\\tetrahedra_test.xyz','w')
-        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('Pb', self.body_center[0]*5.038,self.body_center[1]*5.434,self.body_center[2]*7.3707)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('Pb', self.body_center[0],self.body_center[1],self.body_center[2])
         f.write(s)
-        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p0[0]*5.038,self.p0[1]*5.434,self.p0[2]*7.3707)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p0[0],self.p0[1],self.p0[2])
         f.write(s)
-        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p1[0]*5.038,self.p1[1]*5.434,self.p1[2]*7.3707)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p1[0],self.p1[1],self.p1[2])
         f.write(s)
-        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p2[0]*5.038,self.p2[1]*5.434,self.p2[2]*7.3707)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p2[0],self.p2[1],self.p2[2])
+        f.write(s)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p3[0],self.p3[1],self.p3[2])
         f.write(s)
         f.close()
