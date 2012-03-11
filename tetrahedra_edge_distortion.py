@@ -65,13 +65,12 @@ class tetrahedra_edge_distortion ():
         a,b,c=n_v[0],n_v[1],n_v[2]
         x0,y0,z0=p0[0],p0[1],p0[2]
         ref_p=0
-        try:
+        if c!=0.:
             ref_p=np.array([1.,1.,(a*(x0-1.)+b*(y0-1.))/c+z0])
-        except:
-            try:
-                ref_p=np.array([1.,(a*(x0-1.)+c*(z0-1.))/b+y0,1.])
-            except:
-                ref_p=np.array([(b*(y0-1.)+c*(z0-1.))/a+x0,1.,1.])
+        elif b!=0.:
+            ref_p=np.array([1.,(a*(x0-1.)+c*(z0-1.))/b+y0,1.])
+        else:
+            ref_p=np.array([(b*(y0-1.)+c*(z0-1.))/a+x0,1.,1.])
         origin=p0
         #print np.dot((p1-p0),(ref_p-p0))
         y_v=f3(np.zeros(3),(ref_p-origin))
@@ -151,10 +150,10 @@ class tetrahedra_edge_distortion ():
         #print p2_new
         self.p2 = np.dot(inv(T),p2_new)+origin
         self.p3 = np.dot(inv(T),p3_new)+origin
-    def all_in_all(self):
+    def all_in_all(self,switch=False,phi=0.):
         self.cal_theta()
         self.cal_edge_len()
-        self.cal_body_center()
+        self.cal_body_center(switch=switch, phi=phi)
         self.cal_corner()
     def print_file(self):
         f=open('Y:\\codes\\my code\\modeling files\\surface modeling 1\\scripts\\tetrahedra_test.xyz','w')
