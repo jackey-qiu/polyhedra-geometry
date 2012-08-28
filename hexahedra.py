@@ -1,7 +1,6 @@
 import numpy as np
 from numpy.linalg import inv
-from sympy import Symbol
-from sympy.matrices import *
+
 
 x0_v,y0_v,z0_v=np.array([1.,0.,0.]),np.array([0.,1.,0.]),np.array([0.,0.,1.])
 
@@ -137,6 +136,22 @@ class share_face():
             p4_org=np.dot(inv(T),p4_new)+center_point
             self.T,self.r,self.p3,self.p4=T,r,p3_org,p4_org
             
+    def print_xyz(self):
+        f=open('/home/jackey/genx/hexahedra.xyz','w')
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('Pb',self.center_point[0],self.center_point[1],self.center_point[2])
+        f.write(s)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O',self.edge[0][0],self.edge[0][1],self.edge[0][2])
+        f.write(s)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O',self.edge[1][0],self.edge[1][1],self.edge[1][2])
+        f.write(s)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O',self.p2[0],self.p2[1],self.p2[2])
+        f.write(s)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O',self.p3[0],self.p3[1],self.p3[2])
+        f.write(s)
+        s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O',self.p4[0],self.p4[1],self.p4[2])
+        f.write(s)
+        f.close()
+        
     def cal_point_in_fit(self,r,theta,phi):
         #during fitting,use the same coordinate system, but a different origin
         #note the origin_coor is the new position for the sorbate0, ie new center point
@@ -224,6 +239,7 @@ class share_edge(share_face):
             y1_v=np.cross(z1_v,x1_v)
             T=f1(x0_v,y0_v,z0_v,x1_v,y1_v,z1_v)
             r=dist/2
+            #here phi in the range of [0,2pi]
             x_p2=r*np.cos(phi)*np.sin(np.pi/2)
             y_p2=r*np.sin(phi)*np.sin(np.pi/2)
             z_p2=0
@@ -239,7 +255,7 @@ class share_edge(share_face):
             z1_v=np.cross(x1_v,y1_v)
             T=f1(x0_v,y0_v,z0_v,x1_v,y1_v,z1_v)
             #note the r is different from that in the case above
-            #note in this case, phi can be either pi/2 or 4pi/3, theta can be any value in the range of [0,pi]
+            #note in this case, phi can be either 0 or pi(checked), theta can be any value in the range of [0,pi]
             r=dist/2*np.sqrt(3.)
             x_p2=r*np.cos(phi)*np.sin(theta)
             y_p2=r*np.sin(phi)*np.sin(theta)
