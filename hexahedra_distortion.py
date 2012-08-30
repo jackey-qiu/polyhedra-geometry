@@ -3,7 +3,8 @@ from numpy.linalg import inv
 
 #note: this module is only used to consider the situation with flag of '0_2+0_1' in share_edge and '0_3' '1_2' in share_face
 #in 1_2 situation,make sure theta_top_down in range of [0,pi/2], and open angle must be higher than the top angle in the triangular defined by p0,p1 and p2
-#and p0 is of the up_down type
+#and p0 is of the up_down type 
+#use switch to find the center_point reasonably (if true center_point above,if false center_point below)
 #ignore the other situations unless they are modified and testified to be workable.
 #the open angel in the regular hexahedra is 120 dg, while here you can specify it. What can also be specified is the r_top_down, is the distance
 #between center point and one of the apex (up and down type point)
@@ -28,12 +29,14 @@ f2=lambda p1,p2:np.sqrt(np.sum((p1-p2)**2))
 f3=lambda p1,p2:(1./f2(p1,p2))*(p2-p1)+p1
 
 class share_face():
-    def __init__(self,face=np.array([[0.,0.,0.],[0.5,0.5,0.5],[1.0,1.0,1.0]]),open_angle=np.pi*2/3,r_top_down=None,theta_top_down=0.):
+    def __init__(self,face=np.array([[0.,0.,0.],[0.5,0.5,0.5],[1.0,1.0,1.0]]),open_angle=np.pi*2/3,r_top_down=None,theta_top_down=0.,switch=True):
         #pass in the vector of three known vertices
+        #the center point will be below the face plane if switch=False, and it will above the surface plane if switch=True 
         self.face=face
         self.open_angle=open_angle
         self.r_top_down=r_top_down
         self.theta_top_down=theta_top_down
+        self.switch=switch
         
     def share_face_init(self,flag='0_3'):
         #hexahedra has five vertices, there are two more besides the known three. there are two types of vertices, one type consisting of two featuring up and down
@@ -80,8 +83,16 @@ class share_face():
                 sin_list=[(b+(b**2-4*a*c)**0.5)/2./a,(b-(b**2-4*a*c)**0.5)/2./a]
                 theta=0
                 if (sin_list[0]<1)&(sin_list[0]>0):
-                    theta=np.pi/2+np.arcsin(sin_list[0])
-                else:theta=np.pi/2+np.arcsin(sin_list[1])
+                    if self.switch==False:
+                        theta=np.pi/2+np.arcsin(sin_list[0])
+                    elif self.switch==True:
+                        theta=np.pi/2-np.arcsin(sin_list[0])
+                else:
+                    if self.switch==False:
+                        theta=np.pi/2+np.arcsin(sin_list[1])
+                    elif self.switch==True:
+                        theta=np.pi/2-np.arcsin(sin_list[1])
+                    
                 center_point_new=np.array([r*np.cos(phi)*np.sin(theta),r*np.sin(phi)*np.sin(theta),r*np.cos(theta)])
                 center_point_org=np.dot(inv(T),center_point_new)+origin
                 return center_point_org
