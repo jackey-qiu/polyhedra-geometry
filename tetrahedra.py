@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import inv
-from sympy import Symbol
-from sympy.matrices import *
+#from sympy import Symbol
+#from sympy.matrices import *
 #see detail comment in hexahedra_4
 x0_v,y0_v,z0_v=np.array([1.,0.,0.]),np.array([0.,1.,0.]),np.array([0.,0.,1.])
 

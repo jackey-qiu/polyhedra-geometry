@@ -1,3 +1,5 @@
+#chang note from edition1: the base (triangle p2p0-cp in ppt) of the regular tetrahedra is not necessarily an equilateral triangle,
+#and we specified the top angle (angle p0-p2-cp in ppt) within [0,pi]of the base, so that will affect the calculation of point p2
 import numpy as np
 from numpy.linalg import inv
 
@@ -16,13 +18,15 @@ f3=lambda p1,p2:(1./f2(p1,p2))*(p2-p1)+p1
 #refer the the associated ppt file when read the comments
 class trigonal_pyramid_distortion():
     
-    def __init__(self,p0=[0.,0.,0.],p1=[2.,2.,2.],top_angle=1.0,len_offset=[0.,0.]):
+    def __init__(self,p0=[0.,0.,0.],p1=[2.,2.,2.],top_angle=1.0,len_offset=[0.,0.],top_angle_base=np.pi/3.):
         #top angle is p0_A_p1 in ppt file, shoulder_angle is A_P0_CP
         #len_offset[0] is CP_P1 in ppt, the other one not specified in the file
+        #top_angle_base:angle p0-p2-cp in ppt
         self.top_angle=top_angle
         self.shoulder_angle=(np.pi-top_angle)/2.
         self.p0,self.p1=np.array(p0),np.array(p1)
         self.len_offset=len_offset
+        self.top_angle_base=top_angle_base
     
     def cal_theta(self):
     #here theta angle is angle A_P0_P1 in ppt file
@@ -82,9 +86,15 @@ class trigonal_pyramid_distortion():
         y_v=np.cross(z_v,x_v)
         T=f1(x0_v,y0_v,z0_v,x_v,y_v,z_v)
         theta=np.pi/2
-        dst_face_ct_edge_ct=f2(p0,self.cross_pt)/2*np.tan(np.pi/6.)
-        dst_p2_edge_ct=f2(p0,self.cross_pt)/2*np.tan(np.pi/3.)
-        phi=np.arccos(dst_face_ct_edge_ct/f2(self.apex,(p0+self.cross_pt)/2.))
+        dst_face_ct_edge_ct=f2(p0,self.cross_pt)/2*np.tan(np.pi/2.-self.top_angle_base)
+        dst_p2_edge_ct=f2(p0,self.cross_pt)/2*np.tan(np.pi/2.-self.top_angle_base/2.)
+        #phi=np.arccos(dst_face_ct_edge_ct/f2(self.apex,(p0+self.cross_pt)/2.))
+        edge_cent_coor=(p0+self.cross_pt)/2.
+        len_A_EC=self.edge_len*np.sin(np.pi/2-self.top_angle/2.)
+        len_p0_EC=self.edge_len*np.cos(np.pi/2-self.top_angle/2.)
+        len_p2_EC=len_p0_EC/np.tan(self.top_angle_base/2.)
+        len_A_p2=self.edge_len
+        phi=np.arccos((len_A_EC**2+len_p2_EC**2-len_A_p2**2)/(2*len_A_EC*len_p2_EC))
         r=dst_p2_edge_ct
         p2_new=np.array([r*np.cos(phi)*np.sin(theta),r*np.sin(phi)*np.sin(theta),r*np.cos(theta)])
         _p2=np.dot(inv(T),p2_new)+origin
@@ -97,11 +107,10 @@ class trigonal_pyramid_distortion():
         self.cal_theta()
         self.cal_edge_len()
         self.cal_apex_coor(switch=switch, phi=phi)
-        #print 'phi=',phi
-        #print 'p2=',list(self.p2)
-        #print 'apex=',list(self.apex)
+
+        
     def print_file(self):
-        f=open('Y:\\codes\\my code\\modeling files\\surface modeling 1\\scripts\\tetrahedra_test.xyz','w')
+        f=open('Y:\\github\\polyhedra-geometry\\tetrahedra_test.xyz','w')
         s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('Pb', self.apex[0],self.apex[1],self.apex[2])
         f.write(s)
         s = '%-5s   %7.5e   %7.5e   %7.5e\n' % ('O', self.p0[0],self.p0[1],self.p0[2])

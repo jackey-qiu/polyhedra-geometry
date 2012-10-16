@@ -167,8 +167,8 @@ class share_edge(share_face):
     def all_in_all(self,ref_p=None,theta=0.,phi=np.pi/2,flag='off_center'):
         self.cal_p2(ref_p=ref_p,theta=theta,phi=phi,flag=flag)
         self.share_face_init(flag=self.flag)
-        print self.edge[0]
-        print self.edge[1]
+        print self.p0
+        print self.p1
         print self.center_point
         print self.p2
         print self.p3

@@ -22,12 +22,11 @@ class trigonal_pyramid_distortion_shareface():
         self.top_angle=top_angle
         self.p0,self.p1,self.p2=np.array(p0),np.array(p1),np.array(p2)
      
-    def cal_apex_coor(self):
+    def cal_apex_coor(self,mirror=True):
     #basis idea: set a new coordinate frame with p0p1 as the z vector (start from p1)
     #set a arbitrary y vector on the normal plane, and cross product to solve the x vector
     #then use phi and theta (sharp angle) to sove the cross_point(CP on file) and apex (A on file)
-    #note phi is in range of [0,2pi]
-    
+        
         origin=(self.p0+self.p1)/2.
         z_v=f3(np.zeros(3),np.cross(self.p1-origin,self.p2-origin))
         x_v=f3(np.zeros(3),self.p2-origin)
@@ -35,7 +34,10 @@ class trigonal_pyramid_distortion_shareface():
         T=f1(x0_v,y0_v,z0_v,x_v,y_v,z_v)
         r=f2(self.p0,self.p1)/2./np.tan(self.top_angle/2.)
         phi=0.
-        theta=np.arcsin(f2(self.p0,self.p1)/2.*np.tan(np.pi/6)/r)
+        if mirror==False:       
+            theta=np.arcsin(f2(self.p0,self.p1)/2.*np.tan(np.pi/6)/r)
+        elif mirror==True:
+            theta=np.pi-np.arcsin(f2(self.p0,self.p1)/2.*np.tan(np.pi/6)/r)
         apex_new = np.array([r*np.cos(phi)*np.sin(theta),r*np.sin(phi)*np.sin(theta),r*np.cos(theta)])
         self.apex = np.dot(inv(T),apex_new)+origin
                
